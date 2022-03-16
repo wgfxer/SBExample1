@@ -54,7 +54,7 @@ object UserHolder {
             password = null,
             phone = userPhone,
             passData = userPasswordData
-        )
+        ).also { user -> map[user.login] = user }
     }
 
     private fun String?.orNull() = if (this.isNullOrEmpty()) null else this
