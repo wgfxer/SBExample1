@@ -3,6 +3,7 @@ package ru.skillbranch.kotlinexample
 import org.junit.After
 import org.junit.Assert
 import org.junit.Test
+import ru.skillbranch.kotlinexample.UserHolder.importUsers
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -183,5 +184,24 @@ class ExampleUnitTest {
 
         Assert.assertNotEquals(oldAccess, user.accessCode!!)
         Assert.assertEquals(expectedInfo, successResult)
+    }
+
+    @Test
+    fun test() {
+        val userString = " John Doe ;JohnDoe@unknow.com;[B@7591083d:c6adb4becdc64e92857e1e2a0fd6af84;;"
+        val users = importUsers(listOf(userString))
+
+        val expectedInfo = """
+            firstName: John
+            lastName: Doe
+            login: johndoe@unknow.com
+            fullName: John Doe
+            initials: J D
+            email: JohnDoe@unknow.com
+            phone: null
+            meta: {src=csv}
+        """.trimIndent()
+
+        Assert.assertEquals(expectedInfo, users[0].userInfo)
     }
 }

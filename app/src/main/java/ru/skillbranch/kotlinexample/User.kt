@@ -49,9 +49,8 @@ class User private constructor(
             lastName: String?,
             email: String,
             password: String?,
-            fromCsv: Boolean,
             passData: Pair<String, String>? = null
-    ) : this(firstName, lastName, email = email, meta = mapOf("auth" to "password").addCsvIfNeed(fromCsv)) {
+    ) : this(firstName, lastName, email = email, meta = if (passData == null) mapOf("auth" to "password") else csvMap) {
         println("Secondary email constructor")
         if (passData == null) {
             passwordHash = encrypt(password!!)
@@ -66,9 +65,8 @@ class User private constructor(
             firstName: String,
             lastName: String?,
             rawPhone: String,
-            fromCsv: Boolean,
             passData: Pair<String, String>? = null
-    ) : this(firstName, lastName, rawPhone = rawPhone, meta = mapOf("auth" to "sms").addCsvIfNeed(fromCsv)) {
+    ) : this(firstName, lastName, rawPhone = rawPhone, meta = if (passData == null) mapOf("auth" to "sms") else csvMap) {
         println("Secondary phone constructor")
         if (passData == null) {
             val code = generateAccessCode()
@@ -147,24 +145,24 @@ class User private constructor(
     }
 
     companion object Factory {
+        val csvMap = mapOf("src" to "csv")
+
         fun makeUser(
                 fullName: String,
                 email: String? = null,
                 password: String? = null,
                 phone: String? = null,
-                isFromCsv: Boolean = false,
                 passData: Pair<String, String>? = null
         ): User {
             val (firstName, lastName) = fullName.fullNameToPair()
 
             return when {
-                !phone.isNullOrBlank() -> User(firstName, lastName, phone, isFromCsv, passData)
+                !phone.isNullOrBlank() -> User(firstName, lastName, phone, passData)
                 !email.isNullOrBlank() -> User(
                     firstName,
                     lastName,
                     email,
                     password,
-                    isFromCsv,
                     passData
                 )
                 else -> throw IllegalArgumentException("Email or phone must not be null or blank")
@@ -185,6 +183,5 @@ class User private constructor(
                             }
                         }
     }
-}
 
-private fun Map<String, Any>.addCsvIfNeed(fromCsv: Boolean) = if (fromCsv) toMutableMap().apply { this["src"] = "csv" } else this
+}

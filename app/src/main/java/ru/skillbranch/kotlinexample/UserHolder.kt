@@ -53,7 +53,6 @@ object UserHolder {
             email = userEmail,
             password = null,
             phone = userPhone,
-            isFromCsv = true,
             passData = userPasswordData
         )
     }
